@@ -1,0 +1,15 @@
+{
+	"content_scripts": [],
+	"description": "CouchPotato Extension",
+	"creator": "Ruud Burger",
+	"background_scripts": ["main.js"],
+	"content_scripts": ["userscript.js"],
+	"homepage_url": "https://couchpota.to/",
+	"version": "1.0",
+	"browser_button": {
+		"caption": "CouchPotato",
+		"icon": "icons/button_gray.png",
+		"tooltipText": "CouchPotato"
+	},
+	"name": "CouchPotato"
+}
