@@ -5,12 +5,10 @@
 		self.openFrame();
 	});
 	kango.browser.addEventListener(kango.browser.event.DOCUMENT_COMPLETE, function(event){
-		self.tab = event.source;
 		self.checkPage(true);
 	});
 
 	kango.browser.addEventListener(kango.browser.event.TAB_CHANGED, function(event){
-		self.tab = event.source;
 		self.checkPage(true);
 	});
 
@@ -36,7 +34,8 @@ CPExt.prototype = {
 		if(self.enabled){
 
 			kango.browser.tabs.getCurrent(function(tab) {
-				tab.dispatchMessage('showiFrame', 'data');
+				if(!tab.isActive()) return;
+					tab.dispatchMessage('showiFrame');
 			});
 
 		}
@@ -44,7 +43,7 @@ CPExt.prototype = {
 			self.checkPage();
 		}
 		else {
-			alert('Doesn\'t seem to be a page CouchPotato can find a movie on.')
+			self.updateApi();
 		}
 
 	},
@@ -75,11 +74,11 @@ CPExt.prototype = {
 				self.iframe_url = null;
 
 				self.enabled = false;
-				kango.ui.browserButton.setTooltipText('Current tab doesn\'t seem to be supported.');
+				kango.ui.browserButton.setTooltipText('Current tab doesn\'t contain any movies.');
 				kango.ui.browserButton.setIcon('icons/button_gray.png');
 
 				if(!silent)
-					alert('Can\'t find a movie on this page')
+					self.alert('Can\'t find a movie on this page', 'No movie found')
 			}
 
 		});
@@ -146,17 +145,17 @@ CPExt.prototype = {
 	        }
 	        else if (data.status == 404){
 	        	if(!silent)
-	        		alert('CouchPotato seems to be running, but can\'t login. Open up CouchPotato in a new tab and click this button again.');
+	        		self.alert('CouchPotato seems to be running, but can\'t login. Open up CouchPotato in a new tab and click this button again.');
 
 	        	self.clearApi();
 	        }
 	        else if (data.status == 0){
 	        	if(!silent)
-	        		alert('CouchPotato doesn\'t appear to be running.')
+	        		self.alert('CouchPotato doesn\'t appear to be running.')
 	        }
 	        else {
 	        	if(!silent)
-	        		alert('Error:' + data.status + ' response:' + data.response);
+	        		self.alert('Error:' + data.status + ' response:' + data.response);
 	        }
 
 		});
@@ -166,14 +165,16 @@ CPExt.prototype = {
 	setApi: function(api){
 		var self = this;
 
-		p(api);
 		if(api){
-			alert('Successfully attached the extension to your CouchPotato host.');
+			self.alert('Successfully attached the extension to your CouchPotato installation.');
 			kango.storage.setItem('api', api);
 			self.updateIncludeUrls();
 		}
 		else {
-			alert('Please open up CouchPotato in your browser and hit this button again ;)');
+			if(self.getApi())
+				self.alert('Doesn\'t seem to be a page CouchPotato can find a movie on.', 'No movie found');
+			else
+				self.alert('Please open up CouchPotato in your browser and hit this button again ;)');
 		}
 
 	},
@@ -190,8 +191,23 @@ CPExt.prototype = {
 		var self = this;
 
 		kango.browser.tabs.getCurrent(function(tab) {
+			if(!tab.isActive()) return;
+
 			p('Update api');
-			tab.dispatchMessage('checkApi', 'data');
+			tab.dispatchMessage('checkApi');
+
+		});
+	},
+
+	alert: function(msg, title){
+
+		kango.browser.tabs.getCurrent(function(tab) {
+			if(!tab.isActive()) return;
+
+			tab.dispatchMessage('showAlert', {
+				'title': title || null,
+				'msg': msg
+			});
 		});
 	}
 
