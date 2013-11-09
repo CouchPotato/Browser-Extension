@@ -5,7 +5,10 @@
 // ==/UserScript==
 
 var html_el = document.documentElement,
-	$ = document.querySelector;
+	$ = function(selector){
+		return document.querySelector(selector)
+	},
+	close_alert = null;
 
 kango.addMessageListener('checkApi', function(event) {
 	kango.dispatchMessage('setApi', document.body.getAttribute('data-api'));
@@ -18,7 +21,7 @@ kango.addMessageListener('showAlert', function(event) {
 		.cp_dialog { padding: 20px; } \
 		.cp_dialog .cp_title { font-weight: bold; } \
 		.cp_dialog .cp_msg { margin: 5px 0 10px 0; } \
-		.cp_ok { outline: 0;  border-radius: 0; box-shadow: none; float: right; padding: 10px; border: none; display: inline-block; background: #91CD85; color: #FFF; font-weight: bold; font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif; } \
+		.cp_ok { outline: 0;  border-radius: 0; float: right; padding: 10px; border: none; display: inline-block; background: #91CD85; color: #FFF; font-weight: bold; font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif; } \
 		.cp_ok::-moz-focus-inner { border: 0; } \
 		.cp_ok:hover { background: #7AA76D; } \
 	');
@@ -45,7 +48,7 @@ kango.addMessageListener('showAlert', function(event) {
 	OK.addEventListener('click', popup.close, false);
 	remove_timeout = setTimeout(function(){
 		popup.close();
-	}, 3500);
+	}, 4500);
 
 });
 
@@ -53,8 +56,11 @@ kango.addMessageListener('showAlert', function(event) {
 // Create popup to add movie
 kango.addMessageListener('showiFrame', function(event){
 
-	if($('.cp_popup'))
+	if($('.cp_popup')){
+		if(close_alert)
+			close_alert();
 		return;
+	}
 
 	// Styles
 	var iframe_style = addStyle('\
@@ -89,6 +95,34 @@ kango.addMessageListener('showiFrame', function(event){
 
 });
 
+var queryApi = function(options){
+
+	var options = options || {};
+
+	kango.invokeAsync('extension.getApi', null, function(api) {
+
+		var details = {
+	        method: 'GET',
+	        url: api + options.url,
+	        async: true,
+	        params: options.params || {},
+	        contentType: 'json'
+		};
+
+		kango.xhr.send(details, function(data) {
+		    if(data.status == 200 && data.response != null) {
+		    	if(options.onComplete)
+		        	options.onComplete(data.response);
+		    }
+		    else {
+		        alert('something went wrong');
+		    }
+		});
+	});
+
+}
+
+
 /*
  * Create popup on the edge of the screen
  */
@@ -98,11 +132,11 @@ var createPopup = function(content){
 
 	var popup_style = addStyle(' \
 		.cp_transition { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; -ms-box-sizing: border-box; -o-box-sizing: border-box; box-sizing: border-box; -webkit-transition: all .4s cubic-bezier(0.9,0,0.1,1); -moz-transition: all .4s cubic-bezier(0.9,0,0.1,1); -ms-transition: all .4s cubic-bezier(0.9,0,0.1,1); -o-transition: all .4s cubic-bezier(0.9,0,0.1,1); transition: all .4s cubic-bezier(0.9,0,0.1,1); } \
-		.cp_popup { text-shadow: none; color: #222; right: -340px; z-index: 2147483647; padding: 20px 20px 20px 0; top: -20px; bottom: -20px; position: fixed; width: 340px; background: #fcfcfc;  font-size: 16px; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,.2); font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif; } \
+		.cp_popup { text-shadow: none; color: #222; right: -450px; height: 140px; z-index: 2147483647; padding: 0; top: 0; position: fixed; width: 450px; background: #fcfcfc;  font-size: 16px; overflow: hidden; font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif; } \
 		.cp_popup .cp_popup_inner { position: relative; height: 100%; width: 100%; } \
-		.cp_active .cp_popup { right: -20px; } \
+		.cp_active .cp_popup { right: 0; } \
 		.cp_html { position: relative; right: 0; } \
-		.cp_html.cp_active { right: 320px; } \
+		.cp_html.cp_active { right: 450px; } \
 		.cp_html body { overflow-x: hidden; } \
 	');
 
@@ -117,13 +151,13 @@ var createPopup = function(content){
 	});
 	popup.appendChild(popup_inner);
 
-	addClass(html, 'cp_html cp_transition');
+	//addClass(html, 'cp_html cp_transition');
 	setTimeout(function(){
 		addClass(html, 'cp_active');
 	}, 100);
 
 	var remove_timeout;
-	var close_alert = function(event){
+	close_alert = function(event){
 
 		// Click, Esc, ENTER
 		if(!event || event.keyCode === undefined || event.keyCode === 27 || event.keyCode === 13){
@@ -142,13 +176,17 @@ var createPopup = function(content){
 				removeClass(html, 'cp_html');
 			}, 400);
 
-			body.removeEventListener('keyup', close_alert);
+			document.removeEventListener('keyup', close_alert);
+			body.removeEventListener('click', close_alert);
 			if(remove_timeout) clearTimeout(remove_timeout);
+			
+			close_alert = null;
 		}
 	}
 
 	// Close alerts
 	document.addEventListener('keyup', close_alert, false);
+	body.addEventListener('click', close_alert, false);
 
 	return {
 		'popup': popup,

@@ -35,7 +35,8 @@ CPExt.prototype = {
 
 			kango.browser.tabs.getCurrent(function(tab) {
 				if(!tab.isActive()) return;
-					tab.dispatchMessage('showiFrame');
+				
+				tab.dispatchMessage('showiFrame');
 			});
 
 		}
@@ -103,7 +104,6 @@ CPExt.prototype = {
 				break;
 			}
 		}
-		p('included: '+ included)
 
 		// Check excludes
 		if(included)
@@ -113,7 +113,6 @@ CPExt.prototype = {
 					return false;
 			}
 
-		p('final included: '+ included)
 		return included;
 	},
 
@@ -183,7 +182,7 @@ CPExt.prototype = {
 		kango.storage.setItem('api', null);
 	},
 
-	getApi: function(api){
+	getApi: function(){
 		return kango.storage.getItem('api');
 	},
 
@@ -193,7 +192,6 @@ CPExt.prototype = {
 		kango.browser.tabs.getCurrent(function(tab) {
 			if(!tab.isActive()) return;
 
-			p('Update api');
 			tab.dispatchMessage('checkApi');
 
 		});
