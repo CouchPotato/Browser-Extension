@@ -4,7 +4,7 @@
 	kango.ui.browserButton.addEventListener(kango.ui.browserButton.event.COMMAND, function() {
 		self.openFrame();
 	});
-	
+
 	var check = function(event){
         self.checkPage(true);
     }
@@ -36,7 +36,7 @@ CPExt.prototype = {
 
 			kango.browser.tabs.getCurrent(function(tab) {
 				if(!tab.isActive()) return;
-				
+
 				tab.dispatchMessage('showSidebar');
 			});
 

@@ -5,7 +5,7 @@
 	"background_scripts": ["main.js"],
 	"content_scripts": ["userscript.js"],
 	"homepage_url": "https://couchpota.to/",
-	"version": "0.9.1",
+	"version": "0.9.3",
 	"browser_button": {
 		"caption": "CouchPotato",
 		"icon": "icons/button_gray.png",
