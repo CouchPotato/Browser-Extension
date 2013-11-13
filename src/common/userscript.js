@@ -35,7 +35,7 @@ kango.addMessageListener('showSidebar', function(event){
 			['div.popup_background.popup_background_overlay'],
 			['div.popup_info',
 				['h1.title',
-					['span.title_year']
+					['span.year']
 				],
 				['p.plot'],
 				['div.in_wanted'],
@@ -73,11 +73,11 @@ kango.addMessageListener('showSidebar', function(event){
 					$c('popup_background').setAttribute('style', 'background-image: url(\''+image+'\')');
 
 				// Title
-				$c('title').insertBefore(document.createTextNode(media.original_title), $c('title_year'));
+				$c('title').insertBefore(document.createTextNode(media.original_title), $c('year'));
 
 				// Year
 				if(media.year)
-					$c('title_year').appendChild(document.createTextNode(media.year));
+					$c('year').appendChild(document.createTextNode(media.year));
 
 
 				// Plot
@@ -163,23 +163,24 @@ kango.addMessageListener('showSidebar', function(event){
 				// Add button
 				$c('add_button').addEventListener('click', function(){
 
-					var query_string = ['identifier='+media.imdb];
+					var params = {'identifier': media.imdb};
 					if($c('title_select').value)
-						query_string.push('title=' + escape($c('title_select').value))
+						params['title'] = $c('title_select').value;
 					if($c('category_select').value && $c('category_select').value != 'No category')
-						query_string.push('category_id=' + $c('category_select').value)
+						params['category_id'] = $c('category_select').value;
 					if($c('profile_select').value)
-						query_string.push('profile_id=' + $c('profile_select').value)
+						params['profile_id'] = $c('profile_select').value;
 
 					queryApi({
-						'url': 'movie.add/?' + query_string.join('&'),
+						'url': 'movie.add/',
+						'params': params,
 						'onComplete': function(data){
 
-							$c('profile_select').appendChild(document.createTextNode(data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.'));
+							$c('success').appendChild(document.createTextNode(data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.'));
 
 							setTimeout(function(){
 								addClass($c('form'), 'hide');
-								addClass($c('profile_list'), 'show');
+								addClass($c('success'), 'show');
 							}, 100);
 
 						}
