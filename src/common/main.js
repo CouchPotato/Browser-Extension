@@ -2,15 +2,10 @@
 	var self = this;
 
 	kango.ui.browserButton.addEventListener(kango.ui.browserButton.event.COMMAND, function() {
-		self.openFrame();
+		self.openSidebar();
 	});
 
-	var check = function(event){
-        self.checkPage(true);
-    }
-
     kango.browser.addEventListener(kango.browser.event.DOCUMENT_COMPLETE, check);
-    kango.browser.addEventListener(kango.browser.event.BEFORE_NAVIGATE, check);
 	kango.browser.addEventListener(kango.browser.event.TAB_CHANGED, check);
 
 	kango.addMessageListener('setApi', function(event) {
@@ -23,13 +18,17 @@
 	}, 10000);
 }
 
+var check = function(event){
+    self.checkPage(true);
+}
+
 var p = function(msg){
-	kango.console.log('CouchPotato extension: ' + msg)
+	kango.console.log('CouchPotato extension: ' + msg);
 }
 
 CPExt.prototype = {
 
-	openFrame: function(){
+	openSidebar: function(){
 		var self = this;
 
 		if(self.enabled){
