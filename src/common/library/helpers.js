@@ -97,8 +97,9 @@ var Scaffold = function(){
 		var attrs = parseModifiers(split[2]);
 			parent_el = document.createElement(split[1]);
 
-		if(attrs && attrs.length > 0){
+		if(attrs){
 			for(var i in attrs){
+
 				parent_el.setAttribute(i, attrs[i]);
 			}
 		}

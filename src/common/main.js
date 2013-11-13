@@ -27,6 +27,16 @@ var p = function(msg) {
 	kango.console.log('CouchPotato extension: ' + msg);
 };
 
+var do_alert = function(msg){
+	kango.browser.tabs.getCurrent(function(tab) {
+		if (!tab.isActive()) {
+			return;
+		}
+
+		tab.dispatchMessage('alert', msg);
+	});
+}
+
 CPExt.prototype = {
 
 	openSidebar: function() {
@@ -75,7 +85,7 @@ CPExt.prototype = {
 				kango.ui.browserButton.setIcon('icons/button_gray.png');
 
 				if (!silent) {
-					alert('Can\'t find a movie on this page');
+					do_alert('Can\'t find a movie on this page');
 				}
 			}
 
@@ -138,17 +148,17 @@ CPExt.prototype = {
 				kango.storage.setItem(last_key, now);
 			} else if (data.status == 404) {
 				if (!silent) {
-					alert('CouchPotato seems to be running, but can\'t login. Open up CouchPotato in a new tab and click this button again.');
+					do_alert('CouchPotato seems to be running, but can\'t login. Open up CouchPotato in a new tab and click this button again.');
 				}
 
 				self.clearApi();
 			} else if (data.status === 0) {
 				if (!silent) {
-					alert('CouchPotato doesn\'t appear to be running.');
+					do_alert('CouchPotato doesn\'t appear to be running.');
 				}
 			} else {
 				if (!silent) {
-					alert('Error:' + data.status + ' response:' + data.response);
+					do_alert('Error:' + data.status + ' response:' + data.response);
 				}
 			}
 
@@ -160,14 +170,14 @@ CPExt.prototype = {
 		var self = this;
 
 		if (api) {
-			alert('Successfully attached the extension to your CouchPotato installation.');
+			do_alert('Successfully attached the extension to your CouchPotato installation.');
 			kango.storage.setItem('api', api);
 			self.updateIncludeUrls();
 		} else {
 			if (self.getApi()) {
-				alert('Doesn\'t seem to be a page CouchPotato can find a movie on.');
+				do_alert('Doesn\'t seem to be a page CouchPotato can find a movie on.');
 			} else {
-				alert('Please open up CouchPotato in your browser and hit this button again ;)');
+				do_alert('Please open up CouchPotato in your browser and hit this button again ;)');
 			}
 		}
 

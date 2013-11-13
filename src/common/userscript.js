@@ -14,6 +14,10 @@ kango.addMessageListener('checkApi', function() {
 	kango.dispatchMessage('setApi', document.body.getAttribute('data-api'));
 });
 
+kango.addMessageListener('alert', function(event) {
+	alert(event.data);
+});
+
 // Create popup to add movie
 kango.addMessageListener('showSidebar', function(){
 
@@ -52,7 +56,7 @@ kango.addMessageListener('showSidebar', function(){
 		]
 	);
 
-	var $c = function(sel){ 
+	var $c = function(sel){
 		return popup.element.getElementsByClassName(random+sel)[0];
 	};
 
