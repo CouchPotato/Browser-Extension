@@ -5,76 +5,74 @@
 		self.openSidebar();
 	});
 
-    kango.browser.addEventListener(kango.browser.event.DOCUMENT_COMPLETE, check);
+	var check = function(event) {
+		self.checkPage(true);
+	}
+
+	kango.browser.addEventListener(kango.browser.event.DOCUMENT_COMPLETE, check);
 	kango.browser.addEventListener(kango.browser.event.TAB_CHANGED, check);
 
 	kango.addMessageListener('setApi', function(event) {
-        self.setApi(event.data);
+		self.setApi(event.data);
 	});
 
-	window.setTimeout(function(){
-		if(self.getApi())
+	window.setTimeout(function() {
+		if (self.getApi())
 			self.updateIncludeUrls(true);
 	}, 10000);
 }
 
-var check = function(event){
-    self.checkPage(true);
-}
-
-var p = function(msg){
+var p = function(msg) {
 	kango.console.log('CouchPotato extension: ' + msg);
 }
 
 CPExt.prototype = {
 
-	openSidebar: function(){
+	openSidebar : function() {
 		var self = this;
 
-		if(self.enabled){
+		if (self.enabled) {
 
 			kango.browser.tabs.getCurrent(function(tab) {
-				if(!tab.isActive()) return;
+				if (!tab.isActive())
+					return;
 
 				tab.dispatchMessage('showSidebar');
 			});
 
-		}
-		else if (!self.getApi()){
+		} else if (!self.getApi()) {
 			self.checkPage();
-		}
-		else {
+		} else {
 			self.updateApi();
 		}
 
 	},
 
-	checkPage: function(silent){
+	checkPage : function(silent) {
 		var self = this;
 
 		var api = self.getApi();
-		if(!api && silent)
+		if (!api && silent)
 			return;
-		else if(!api){
+		else if (!api) {
 			self.updateApi();
 			return;
 		}
 
 		kango.browser.tabs.getCurrent(function(tab) {
 
-	        var url = tab.getUrl();
+			var url = tab.getUrl();
 
-			if(self.correctUrl(url)){
+			if (self.correctUrl(url)) {
 				self.enabled = true;
 				kango.ui.browserButton.setTooltipText('Add to CouchPotato');
 				kango.ui.browserButton.setIcon('icons/button.png');
-			}
-			else {
+			} else {
 				self.enabled = false;
 				kango.ui.browserButton.setTooltipText('Current tab doesn\'t contain any movies.');
 				kango.ui.browserButton.setIcon('icons/button_gray.png');
 
-				if(!silent)
+				if (!silent)
 					alert('Can\'t find a movie on this page')
 			}
 
@@ -82,91 +80,83 @@ CPExt.prototype = {
 
 	},
 
-	correctUrl: function(url){
-		var self = this,
-			included = false;
+	correctUrl : function(url) {
+		var self = this, included = false;
 
 		var urls = kango.storage.getItem('urls');
-		if(!urls){
+		if (!urls) {
 			self.updateIncludeUrls();
 			return;
 		}
 
 		// Check includes
-		for(var i = 0; i < urls.includes.length; i++){
+		for (var i = 0; i < urls.includes.length; i++) {
 			var reg = Convert2RegExp(urls.includes[i]);
-			if(reg.test(url)){
+			if (reg.test(url)) {
 				included = true;
 				break;
 			}
 		}
 
 		// Check excludes
-		if(included)
-			for(var i = 0; i < urls.excludes.length; i++){
+		if (included)
+			for (var i = 0; i < urls.excludes.length; i++) {
 				var reg = Convert2RegExp(urls.excludes[i]);
-				if(reg.test(url))
+				if (reg.test(url))
 					return false;
 			}
 
 		return included;
 	},
 
-	updateIncludeUrls: function(silent){
-		var self = this,
-			last_key = 'last_updated',
-			last_updated = kango.storage.getItem(last_key),
-			now = new Date().getTime();
+	updateIncludeUrls : function(silent) {
+		var self = this, last_key = 'last_updated', last_updated = kango.storage.getItem(last_key), now = new Date().getTime();
 
-		if(last_updated && last_updated > now - 86400){
+		if (last_updated && last_updated > now - 86400) {
 			p('Not updating new includes');
 			return;
 		}
 
 		var api = self.getApi();
 		var details = {
-		    'url': api + 'userscript.includes/',
-		    'async': true,
-		    'contentType': 'json'
+			'url' : api + 'userscript.includes/',
+			'async' : true,
+			'contentType' : 'json'
 		};
 
 		kango.xhr.send(details, function(data) {
 
-	        if(data.status == 200 && data.response != null){
-                kango.storage.setItem('urls', data.response);
-                self.checkPage(true);
+			if (data.status == 200 && data.response != null) {
+				kango.storage.setItem('urls', data.response);
+				self.checkPage(true);
 
 				kango.storage.setItem(last_key, now);
-	        }
-	        else if (data.status == 404){
-	        	if(!silent)
-	        		alert('CouchPotato seems to be running, but can\'t login. Open up CouchPotato in a new tab and click this button again.');
+			} else if (data.status == 404) {
+				if (!silent)
+					alert('CouchPotato seems to be running, but can\'t login. Open up CouchPotato in a new tab and click this button again.');
 
-	        	self.clearApi();
-	        }
-	        else if (data.status == 0){
-	        	if(!silent)
-	        		alert('CouchPotato doesn\'t appear to be running.')
-	        }
-	        else {
-	        	if(!silent)
-	        		alert('Error:' + data.status + ' response:' + data.response);
-	        }
+				self.clearApi();
+			} else if (data.status == 0) {
+				if (!silent)
+					alert('CouchPotato doesn\'t appear to be running.')
+			} else {
+				if (!silent)
+					alert('Error:' + data.status + ' response:' + data.response);
+			}
 
 		});
 
 	},
 
-	setApi: function(api){
+	setApi : function(api) {
 		var self = this;
 
-		if(api){
+		if (api) {
 			alert('Successfully attached the extension to your CouchPotato installation.');
 			kango.storage.setItem('api', api);
 			self.updateIncludeUrls();
-		}
-		else {
-			if(self.getApi())
+		} else {
+			if (self.getApi())
 				alert('Doesn\'t seem to be a page CouchPotato can find a movie on.');
 			else
 				alert('Please open up CouchPotato in your browser and hit this button again ;)');
@@ -174,29 +164,28 @@ CPExt.prototype = {
 
 	},
 
-	clearApi: function(){
+	clearApi : function() {
 		kango.storage.setItem('api', null);
 	},
 
-	getApi: function(){
+	getApi : function() {
 		return kango.storage.getItem('api');
 	},
 
-	updateApi: function(){
+	updateApi : function() {
 		var self = this;
 
 		kango.browser.tabs.getCurrent(function(tab) {
-			if(!tab.isActive()) return;
+			if (!tab.isActive())
+				return;
 
 			tab.dispatchMessage('checkApi');
 
 		});
 	}
-
 };
 
 var extension = new CPExt();
-
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1

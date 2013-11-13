@@ -2,8 +2,9 @@
 // @name CouchPotato
 // @include http://*
 // @include https://*
-// @require css.js
-// @require helpers.js
+// @require library/css.js
+// @require library/scaffold.js
+// @require library/helpers.js
 // @require style.js
 // ==/UserScript==
 
@@ -25,8 +26,37 @@ kango.addMessageListener('showSidebar', function(event){
 
 	var popup = createPopup();
 
+	var c = Scaffold(popup.element,
+		['div.loading',
+			['div.message', 'Loading movie']
+		],
+		['div.movie',
+			['div.popup_background'],
+			['div.popup_background.popup_background_overlay'],
+			['div.popup_info',
+				['h1.title',
+					['span.title_year']
+				],
+				['p.plot'],
+				['div.in_wanted'],
+				['div.form.transition',
+					['select.select.title_select'],
+					['select.select.category_select',
+						['option', 'No category']
+					],
+					['select.select.profile_select'],
+					['a.add_button ', 'Add']
+				],
+				['div.success.transition']
+			],
+		]
+	),
+	$c = function(sel){ return popup.element.getElementsByClassName(random+sel)[0]; },
+	$$c = function(sel){ return popup.element.querySelector(addRandom(sel)); };
+
 	kango.invokeAsync('kango.storage.getItem', 'api', function(api) {
 		var url = window.location.href;
+
 
 		queryApi({
 			'url': 'userscript.add_via_url/?url=' + escape(url),
@@ -34,58 +64,25 @@ kango.addMessageListener('showSidebar', function(event){
 				var type = 'movie',
 					media = data[type];
 
-
 				// Create background
 				var image = media.images.poster_original.length > 0 ? media.images.poster_original[0] : null;
 				if(!image && media.images.backdrop.length > 0)
 					image = media.images.backdrop[0];
 
-				if(image){
-					var bg = create('div', {
-						'className': 'popup_background',
-						'style': 'background-image: url(\''+image+'\')'
-					});
-					popup.element.appendChild(bg);
-				}
-
-
-				// Overlay background
-				var bg_overlay = create('div', {
-					'className': 'popup_background popup_background_overlay'
-				});
-				popup.element.appendChild(bg_overlay);
-
-
-				// Inner element
-				var inner = create('div', {
-					'className': 'popup_info'
-				});
-				popup.element.appendChild(inner);
-
+				if(image)
+					$c('popup_background').setAttribute('style', 'background-image: url(\''+image+'\')');
 
 				// Title
-				var title = create('h1', {
-					'className': 'title',
-					'textContent': media.original_title
-				});
-				inner.appendChild(title);
+				$c('title').insertBefore(document.createTextNode(media.original_title), $c('title_year'));
 
-				if(media.year){
-					title.appendChild(create('span', {
-						'className': 'title_year',
-						'textContent': media.year
-					}));
-				}
+				// Year
+				if(media.year)
+					$c('title_year').textContent = media.year;
 
 
 				// Plot
-				if(media.plot){
-					var plot = create('p', {
-						'className': 'plot',
-						'textContent': media.plot
-					});
-					inner.appendChild(plot);
-				}
+				if(media.plot)
+					$c('plot').textContent = media.plot;
 
 
 				// Already exists
@@ -96,118 +93,93 @@ kango.addMessageListener('showSidebar', function(event){
 					});
 				}
 
-				var exists = media.in_wanted && media.in_wanted.profile_id ? create('div', {
-					'className': 'in_wanted',
-					'textContent': 'Already in wanted list: ' + media.in_wanted.profile.label
-				}) : (in_library ? create('div', {
-					'className': 'in_wanted in_library',
-					'textContent': 'Already in library: ' + in_library.join(', ')
-				}) : null);
+				if(media.in_wanted && media.in_wanted.profile_id)
+					$c('in_wanted').textContent = 'Already in wanted list: ' + media.in_wanted.profile.label;
+				else if (in_library)
+					$c('in_wanted').textContent = 'Already in library: ' + in_library.join(', ');
+				else
+					addClass($c('in_wanted'), 'hidden');
 
-				if(exists)
-					inner.appendChild(exists);
-
-				var form = create('div', {
-					'className': 'form transition'
-				});
-				inner.appendChild(form);
-
-				// List title
-				var title_list = create('select', {
-					'className': 'select title_select'
-				});
-				form.appendChild(title_list);
 
 				if(media.titles.length == 1)
-					title_list.className += ' hidden';
+					addClass($c('title_select'), 'hidden');
 				else {
+					var options = '';
 					media.titles.forEach(function(t){
-						title_list.appendChild(create('option', {
-							'value': t,
-							'textContent': t
-						}));
+						options += '<option value="'+t+'">'+t+'</option>';
 					});
+					$c('title_select').innerHTML = options;
+				}
+
+				if(!media.identifier){
+					$c('form').textContent = 'Can\'t find enough data to add this.';
+					return;
 				}
 
 
 				// Get categories
-				var category_list = create('select', {
-					'className': 'select category_select'
-				});
-				form.appendChild(category_list);
 				queryApi({
 					'url': 'category.list/',
 					'onComplete': function(data){
 						var categories = data.list || [];
 
 						if(categories.length == 0){
-							category_list.className += ' hidden';
+							addClass($c('category_select'), 'hidden');
 							return
 						}
 
+						var options = '';
 						categories.forEach(function(cat){
-							category_list.appendChild(create('option', {
-								'value': cat.id,
-								'textContent': cat.label
-							}));
+							options += '<option value="'+cat.id+'">'+cat.label+'</option>';
 						});
+						$c('category_select').innerHTML += options;
 
 					}
 				});
 
 
 				// Get profiles
-				var profiles_list = create('select', {
-					'className': 'select profile_select'
-				});
-				form.appendChild(profiles_list);
 				queryApi({
 					'url': 'profile.list/',
 					'onComplete': function(data){
 						var profiles = data.list || [];
 
+						if(profiles.length == 1){
+							addClass($c('profile_select'), 'hidden');
+							return
+						}
+
+						var options = '';
 						profiles.forEach(function(profile){
 							if(!profile.hide)
-								profiles_list.appendChild(create('option', {
-									'value': profile.id,
-									'textContent': profile.label
-								}));
+								options += '<option value="'+profile.id+'">'+profile.label+'</option>';
 						})
+						$c('profile_select').innerHTML += options;
 
 					}
 				});
 
 
 				// Add button
-				var add_button = create('a', {
-					'className': 'add_button',
-					'textContent': 'Add',
-					'href': '#'
-				});
-				form.appendChild(add_button);
-				add_button.addEventListener('click', function(){
+				$c('add_button').addEventListener('click', function(){
 
 					var query_string = ['identifier='+media.identifier];
-					if(title_list.value)
-						query_string.push('title=' + escape(title_list.value))
-					if(category_list.value)
-						query_string.push('category_id=' + category_list.value)
-					if(profiles_list.value)
-						query_string.push('profile_id=' + profiles_list.value)
+					if($c('title_select').value)
+						query_string.push('title=' + escape($c('title_select').value))
+					if($c('category_select').value && $c('category_select').value != 'No category')
+						query_string.push('category_id=' + $c('category_select').value)
+					if($c('profile_select').value)
+						query_string.push('profile_id=' + $c('profile_select').value)
 
 					queryApi({
 						'url': 'movie.add/?' + query_string.join('&'),
 						'onComplete': function(data){
 
-							var success = create('div', {
-								'textContent': data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.',
-								'className': 'success transition ' + (data.success ? '' : 'failed')
-							});
-							inner.appendChild(success);
+							$c('profile_select').textContent = data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.';
 
 							setTimeout(function(){
-								form.className += ' hide';
-								success.className += ' show';
+								addClass($c('form'), 'hide');
+								addClass($c('profile_list'), 'show');
 							}, 100);
 
 						}
@@ -261,21 +233,18 @@ var createPopup = function(content){
 	addStyle();
 
 	// Overlay box
-	var overlay = create('div', {
-		'className': 'overlay transition2'
-	});
-	body.appendChild(overlay);
+	Scaffold(body,
+		['div.overlay.transition2']
+	);
+	var overlay = $('.overlay');
 
 	// Popup box
-	var popup = create('div', {
-		'className': 'popup transition'
-	});
-	html.appendChild(popup);
-
-	var popup_inner = create('div', {
-		'className': 'popup_inner'
-	});
-	popup.appendChild(popup_inner);
+	Scaffold(html,
+		['div.popup.transition',
+			['div.popup_inner']
+		]
+	);
+	var popup = $('.popup');
 
 	addClass(body, 'transition');
 	setTimeout(function(){
@@ -295,7 +264,6 @@ var createPopup = function(content){
 
 			setTimeout(function(){
 				destroy(popup);
-				destroy(popup_style);
 				destroy(overlay);
 
 				removeClass(body, 'transition');
@@ -316,8 +284,7 @@ var createPopup = function(content){
 	overlay.addEventListener('click', close_alert, false);
 
 	return {
-		'popup': popup,
-		'element': popup_inner,
+		'element': popup,
 		'close': close_alert
 	}
 
