@@ -77,12 +77,12 @@ kango.addMessageListener('showSidebar', function(event){
 
 				// Year
 				if(media.year)
-					$c('title_year').textContent = media.year;
+					$c('title_year').appendChild(document.createTextNode(media.year));
 
 
 				// Plot
 				if(media.plot)
-					$c('plot').textContent = media.plot;
+					$c('plot').appendChild(document.createTextNode(media.plot));
 
 
 				// Already exists
@@ -94,9 +94,9 @@ kango.addMessageListener('showSidebar', function(event){
 				}
 
 				if(media.in_wanted && media.in_wanted.profile_id)
-					$c('in_wanted').textContent = 'Already in wanted list: ' + media.in_wanted.profile.label;
+					$c('in_wanted').appendChild(document.createTextNode('Already in wanted list: ' + media.in_wanted.profile.label));
 				else if (in_library)
-					$c('in_wanted').textContent = 'Already in library: ' + in_library.join(', ');
+					$c('in_wanted').appendChild(document.createTextNode('Already in library: ' + in_library.join(', ')));
 				else
 					addClass($c('in_wanted'), 'hidden');
 
@@ -175,7 +175,7 @@ kango.addMessageListener('showSidebar', function(event){
 						'url': 'movie.add/?' + query_string.join('&'),
 						'onComplete': function(data){
 
-							$c('profile_select').textContent = data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.';
+							$c('profile_select').appendChild(document.createTextNode(data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.'));
 
 							setTimeout(function(){
 								addClass($c('form'), 'hide');
@@ -187,7 +187,6 @@ kango.addMessageListener('showSidebar', function(event){
 
 
 				}, false);
-
 
 			}
 		})
