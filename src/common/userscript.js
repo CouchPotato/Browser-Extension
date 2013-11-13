@@ -111,7 +111,7 @@ kango.addMessageListener('showSidebar', function(event){
 					$c('title_select').innerHTML = options;
 				}
 
-				if(!media.identifier){
+				if(!media.imdb){
 					$c('form').textContent = 'Can\'t find enough data to add this.';
 					return;
 				}
@@ -163,7 +163,7 @@ kango.addMessageListener('showSidebar', function(event){
 				// Add button
 				$c('add_button').addEventListener('click', function(){
 
-					var query_string = ['identifier='+media.identifier];
+					var query_string = ['identifier='+media.imdb];
 					if($c('title_select').value)
 						query_string.push('title=' + escape($c('title_select').value))
 					if($c('category_select').value && $c('category_select').value != 'No category')

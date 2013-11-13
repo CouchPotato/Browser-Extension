@@ -158,6 +158,6 @@ var addStyle = function(){
 		'opacity': 1
 	})
 	addSelector('.hidden', {
-		'visibility': 'hidden'
-	})
+		'opacity': .1
+	});
 }
