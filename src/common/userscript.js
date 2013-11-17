@@ -3,12 +3,21 @@
 // @include http://*
 // @include https://*
 // @require library/css.js
-// @require library/scaffold.js
 // @require library/helpers.js
+// @require library/mousetrap.js
 // @require style.js
 // ==/UserScript==
 
 var close_alert = null;
+
+Mousetrap.bind('c o u c h', function() {
+	if(close_alert){
+		close_alert();
+	}
+	else {
+		kango.invokeAsync('extension.openSidebar');
+	}
+});
 
 kango.addMessageListener('checkApi', function() {
 	kango.dispatchMessage('setApi', document.body.getAttribute('data-api'));
@@ -21,10 +30,8 @@ kango.addMessageListener('alert', function(event) {
 // Create popup to add movie
 kango.addMessageListener('showSidebar', function(){
 
-	if($(addRandom('.popup'))){
-		if(close_alert){
-			close_alert();
-		}
+	if(close_alert){
+		close_alert();
 		return;
 	}
 
@@ -111,17 +118,16 @@ kango.addMessageListener('showSidebar', function(){
 				addClass($c('in_wanted'), 'hidden');
 			}
 
-
 			if(media.titles.length === 1){
 				addClass($c('title_select'), 'hidden');
 			}
-			else {
-				var options = '';
-				media.titles.forEach(function(t){
-					options += '<option value="'+t+'">'+t+'</option>';
-				});
-				$c('title_select').innerHTML = options;
-			}
+			
+			var options = '';
+			media.titles.forEach(function(t){
+				options += '<option value="'+t+'">'+t+'</option>';
+			});
+			$c('title_select').innerHTML = options;
+			
 
 			if(!media.imdb){
 				$c('form').textContent = 'Can\'t find enough data to add this.';
@@ -158,7 +164,6 @@ kango.addMessageListener('showSidebar', function(){
 
 					if(profiles.length === 1){
 						addClass($c('profile_select'), 'hidden');
-						return;
 					}
 
 					var options = '';
