@@ -16,18 +16,13 @@
 		self.setApi(event.data);
 	});
 
-	// Refresh to inject userscript
-	kango.browser.tabs.getAll(function(tabs) {
-
-		tabs.forEach(function(tab){
-			if (!self.correctUrl(tab.getUrl()) && !tab.isActive()){
-				return;
-			}
-
-			tab.navigate(tab.getUrl());
-		});
-
-	});
+	// Set popup if not connected
+	if(!self.getApi()){
+		kango.ui.browserButton.setPopup({url:'popup.html', width: 400, height:140});
+	}
+	else {
+		self.refreshTabs();
+	}
 
 	window.setTimeout(function() {
 		if (self.getApi()) {
@@ -107,7 +102,8 @@ CPExt.prototype = {
 	},
 
 	correctUrl: function(url) {
-		var self = this, included = false;
+		var self = this,
+			included = false;
 
 		var urls = kango.storage.getItem('urls');
 		if (!urls) {
@@ -149,6 +145,10 @@ CPExt.prototype = {
 		}
 
 		var api = self.getApi();
+		if(!api) {
+			return false;
+		}
+
 		var details = {
 			'url': api + 'userscript.includes/',
 			'async': true,
@@ -159,7 +159,11 @@ CPExt.prototype = {
 
 			if (data.status == 200 && data.response !== null) {
 				kango.storage.setItem('urls', data.response);
-				self.checkPage(true);
+
+				// Refresh active pages with new userscript
+				if(!silent){
+					self.refreshTabs();
+				}
 
 				kango.storage.setItem(last_key, now);
 			} else if (data.status == 404) {
@@ -187,6 +191,7 @@ CPExt.prototype = {
 
 		if (api) {
 			do_alert('Successfully attached the extension to your CouchPotato installation.');
+			kango.ui.browserButton.setPopup(null);
 			kango.storage.setItem('api', api);
 			self.updateIncludeUrls();
 		} else {
@@ -215,6 +220,23 @@ CPExt.prototype = {
 			}
 
 			tab.dispatchMessage('checkApi');
+
+		});
+
+	},
+
+	refreshTabs: function(){
+		var self = this;
+
+		kango.browser.tabs.getAll(function(tabs) {
+
+			tabs.forEach(function(tab){
+				if (!self.correctUrl(tab.getUrl()) && !tab.isActive()){
+					return;
+				}
+
+				tab.navigate(tab.getUrl());
+			});
 
 		});
 
