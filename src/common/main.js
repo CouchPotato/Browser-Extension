@@ -16,14 +16,14 @@
 		self.setApi(event.data);
 	});
 
+	// Refresh to inject userscript
 	kango.browser.tabs.getAll(function(tabs) {
 
 		tabs.forEach(function(tab){
-			if (!self.correctUrl(tab.getUrl())){
+			if (!self.correctUrl(tab.getUrl()) && !tab.isActive()){
 				return;
 			}
 
-			// Refresh to inject userscript
 			tab.navigate(tab.getUrl());
 		});
 
@@ -138,9 +138,9 @@ CPExt.prototype = {
 	},
 
 	updateIncludeUrls: function(silent) {
-		var self = this, 
-			last_key = 'last_updated', 
-			last_updated = kango.storage.getItem(last_key), 
+		var self = this,
+			last_key = 'last_updated',
+			last_updated = kango.storage.getItem(last_key),
 			now = new Date().getTime();
 
 		if (last_updated && last_updated > now - 86400) {
