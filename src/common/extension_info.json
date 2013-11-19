@@ -1,7 +1,7 @@
 {
 	"name": "CouchPotato",
 	"version": "0.9.7",
-	"description": "CouchPotato Extension",
+	"description": "Easily add movies to your CouchPotato!",
 	"creator": "Ruud Burger",
 	"homepage_url": "https://couchpota.to/",
 	"background_scripts": ["main.js"],
