@@ -112,22 +112,25 @@ CPExt.prototype = {
 		}
 
 		// Check includes
-		for (var i = 0; i < urls.includes.length; i++) {
-			var reg = Convert2RegExp(urls.includes[i]);
+		urls.includes.forEach(function(check_url){
+			if(included){ return; }
+
+			var reg = Convert2RegExp(check_url);
 			if (reg.test(url)) {
 				included = true;
-				break;
 			}
-		}
+		});
 
 		// Check excludes
 		if (included) {
-			for (var i2 = 0; i < urls.excludes.length; i2++) {
-				var reg2 = Convert2RegExp(urls.excludes[i2]);
-				if (reg2.test(url)) {
-					return false;
+			urls.excludes.forEach(function(check_url){
+				if(!included) { return; }
+
+				var reg = Convert2RegExp(check_url);
+				if (reg.test(url)) {
+					included = false;
 				}
-			}
+			});
 		}
 
 		return included;
