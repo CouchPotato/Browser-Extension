@@ -111,7 +111,7 @@ kango.addMessageListener('showSidebar', function(){
 			if(media.in_wanted && media.in_wanted.profile_id){
 				$c('in_wanted').appendChild(document.createTextNode('Already in wanted list: ' + media.in_wanted.profile.label));
 			}
-			else if (in_library){
+			else if (in_library.length > 0){
 				$c('in_wanted').appendChild(document.createTextNode('Already in library: ' + in_library.join(', ')));
 			}
 			else {
