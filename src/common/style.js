@@ -74,6 +74,31 @@ var addStyle = function(){
 		'background': '@linear-gradient(to bottom, rgba(78,89,105,0) 0%, rgba(78,89,105,0.8) 30%, rgba(78,89,105,1) 100%)'
 	});
 
+	addSelector('.loading', {
+		'top': 0,
+		'color': '#FFF',
+		'opacity': 1,
+		'position': 'absolute',
+		'left': 0,
+		'right': 0,
+		'padding': '60px 20px 0',
+		'text-align': 'center',
+		'font-size': '25px'
+	});
+
+		addSelector('.loading.hide', {
+			'top': '-90px',
+			'opacity': 0
+		});
+
+	addSelector('.movie', {
+		'opacity': 1
+	});
+
+		addSelector('.movie.hide', {
+			'opacity': 0
+		});
+
 	addSelector('.popup_info', {
 		'position': 'absolute',
 		'z-index': 2,

@@ -38,10 +38,10 @@ kango.addMessageListener('showSidebar', function(){
 	var popup = createPopup();
 
 	Scaffold(popup.element,
-		['div.loading',
-			['div.message', 'Loading movie']
+		['div.loading.transition',
+			['div.message', 'Loading movie info']
 		],
-		['div.movie',
+		['div.movie.transition2.hide',
 			['div.popup_background'],
 			['div.popup_background.popup_background_overlay'],
 			['div.popup_info',
@@ -121,13 +121,13 @@ kango.addMessageListener('showSidebar', function(){
 			if(media.titles.length === 1){
 				addClass($c('title_select'), 'hidden');
 			}
-			
+
 			var options = '';
 			media.titles.forEach(function(t){
 				options += '<option value="'+t+'">'+t+'</option>';
 			});
 			$c('title_select').innerHTML = options;
-			
+
 
 			if(!media.imdb){
 				$c('form').textContent = 'Can\'t find enough data to add this.';
@@ -208,6 +208,11 @@ kango.addMessageListener('showSidebar', function(){
 
 
 			}, false);
+
+
+			// Hide loading, show movie
+			addClass($c('loading'), 'hide');
+			removeClass($c('movie'), 'hide');
 
 		}
 
