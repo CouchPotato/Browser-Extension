@@ -104,7 +104,7 @@ kango.addMessageListener('showSidebar', function(){
 			var in_library = [];
 			if(media.in_library){
 				media.in_library.releases.forEach(function(release){
-					in_library.push(release.quality.label);
+					in_library.push(release.quality || release.quality.label);
 				});
 			}
 
@@ -148,7 +148,7 @@ kango.addMessageListener('showSidebar', function(){
 
 					var options = '';
 					categories.forEach(function(cat){
-						options += '<option value="'+cat.id+'">'+cat.label+'</option>';
+						options += '<option value="'+(cat._id || cat.id)+'">'+cat.label+'</option>';
 					});
 					$c('category_select').innerHTML += options;
 
@@ -169,7 +169,7 @@ kango.addMessageListener('showSidebar', function(){
 					var options = '';
 					profiles.forEach(function(profile){
 						if(!profile.hide){
-							options += '<option value="'+profile.id+'">'+profile.label+'</option>';
+							options += '<option value="'+(profile._id || profile.id)+'">'+profile.label+'</option>';
 						}
 					});
 					$c('profile_select').innerHTML += options;
