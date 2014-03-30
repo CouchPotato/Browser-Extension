@@ -1,4 +1,5 @@
 {
-  "developer_id": "6338U9TX2C", 
-  "id": "couchpotato.extension"
+  "developer_id": "6338U9TX2C",
+  "id": "couchpotato.extension",
+  "update_url": "https://couchpota.to/extensions/safari/updates.plist"
 }
