@@ -109,7 +109,8 @@ kango.addMessageListener('showSidebar', function(){
 			}
 
 			if(media.in_wanted && media.in_wanted.profile_id){
-				$c('in_wanted').appendChild(document.createTextNode('Already in wanted list: ' + media.in_wanted.profile.label));
+
+				$c('in_wanted').appendChild(document.createTextNode('Already in wanted list'));
 			}
 			else if (in_library.length > 0){
 				$c('in_wanted').appendChild(document.createTextNode('Already in library: ' + in_library.join(', ')));
@@ -122,11 +123,16 @@ kango.addMessageListener('showSidebar', function(){
 				addClass($c('title_select'), 'hidden');
 			}
 
-			var options = '';
+			var title_select = $c('title_select');
 			media.titles.forEach(function(t){
-				options += '<option value="'+t+'">'+t+'</option>';
+				var opt_text = document.createTextNode(t),
+					opt = document.createElement('option');
+
+				opt.setAttribute('value', t);
+				opt.appendChild(opt_text);
+
+				title_select.appendChild(opt);
 			});
-			$c('title_select').innerHTML = options;
 
 
 			if(!media.imdb){
@@ -146,11 +152,17 @@ kango.addMessageListener('showSidebar', function(){
 						return;
 					}
 
-					var options = '';
+					var category_select = $c('category_select');
 					categories.forEach(function(cat){
-						options += '<option value="'+(cat._id || cat.id)+'">'+cat.label+'</option>';
+						var opt_text = document.createTextNode(cat.label),
+							opt = document.createElement('option');
+
+						opt.setAttribute('value', (cat._id || cat.id));
+						opt.appendChild(opt_text);
+
+
+						category_select.appendChild(opt);
 					});
-					$c('category_select').innerHTML += options;
 
 				}
 			});
@@ -166,13 +178,16 @@ kango.addMessageListener('showSidebar', function(){
 						addClass($c('profile_select'), 'hidden');
 					}
 
-					var options = '';
+					var profile_select = $c('profile_select');
 					profiles.forEach(function(profile){
-						if(!profile.hide){
-							options += '<option value="'+(profile._id || profile.id)+'">'+profile.label+'</option>';
-						}
+						var opt_text = document.createTextNode(profile.label),
+							opt = document.createElement('option');
+
+						opt.setAttribute('value', (profile._id || profile.id));
+						opt.appendChild(opt_text);
+
+						profile_select.appendChild(opt);
 					});
-					$c('profile_select').innerHTML += options;
 
 				}
 			});
