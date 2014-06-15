@@ -145,7 +145,7 @@ kango.addMessageListener('showSidebar', function(){
 			queryApi({
 				'url': 'category.list/',
 				'onComplete': function(data){
-					var categories = data.list || [];
+					var categories = data.categories || [];
 
 					if(categories.length === 0){
 						addClass($c('category_select'), 'hidden');
@@ -172,14 +172,13 @@ kango.addMessageListener('showSidebar', function(){
 			queryApi({
 				'url': 'profile.list/',
 				'onComplete': function(data){
-					var profiles = data.list || [];
+					var profiles = data.list || [],
+						profile_select = $c('profile_select'),
+						profile_count = 0;
 
-					if(profiles.length === 1){
-						addClass($c('profile_select'), 'hidden');
-					}
-
-					var profile_select = $c('profile_select');
 					profiles.forEach(function(profile){
+						if(profile.hide) return;
+
 						var opt_text = document.createTextNode(profile.label),
 							opt = document.createElement('option');
 
@@ -187,7 +186,12 @@ kango.addMessageListener('showSidebar', function(){
 						opt.appendChild(opt_text);
 
 						profile_select.appendChild(opt);
+						profile_count++;
 					});
+
+					if(profile_count === 1){
+						addClass($c('profile_select'), 'hidden');
+					}
 
 				}
 			});
