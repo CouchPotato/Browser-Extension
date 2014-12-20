@@ -234,7 +234,7 @@ CPExt.prototype = {
 		kango.browser.tabs.getAll(function(tabs) {
 
 			tabs.forEach(function(tab){
-				if (!self.correctUrl(tab.getUrl()) && !tab.isActive()){
+				if (!tab.getUrl() || (!self.correctUrl(tab.getUrl()) && !tab.isActive())){
 					return;
 				}
 
