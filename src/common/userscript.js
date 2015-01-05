@@ -75,9 +75,15 @@ kango.addMessageListener('showSidebar', function(){
 			var type = 'movie',
 				media = data[type];
 
+			if(!media){
+				$c('message').textContent = 'Failed getting movie info, check your CouchPotato logs for more info.';
+				return;
+			}
+
 			// Create background
-			var image = media.images.poster_original.length > 0 ? media.images.poster_original[0] : null;
-			if(!image && media.images.backdrop.length > 0){
+			var has_images = media && media.images,
+				image = has_images && media.images.poster_original.length > 0 ? media.images.poster_original[0] : null;
+			if(!image && has_images && media.images.backdrop.length > 0){
 				image = media.images.backdrop[0];
 			}
 
@@ -210,18 +216,17 @@ kango.addMessageListener('showSidebar', function(){
 					params.profile_id = $c('profile_select').value;
 				}
 
+				var message = document.createTextNode('Adding movie...');
+				$c('success').appendChild(message);
+
+				addClass($c('form'), 'hide');
+				addClass($c('success'), 'show');
+
 				queryApi({
 					'url': 'movie.add/',
 					'params': params,
 					'onComplete': function(data){
-
-						$c('success').appendChild(document.createTextNode(data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.'));
-
-						setTimeout(function(){
-							addClass($c('form'), 'hide');
-							addClass($c('success'), 'show');
-						}, 100);
-
+						message.textContent = data.success ? 'Movie added successfully!' : 'Failed adding movie. Check logs.';
 					}
 				});
 

@@ -140,13 +140,12 @@ var addStyle = function(){
 		});
 
 		addSelector('.form', {
-			'position': 'relative'
+			'position': 'absolute',
+			'width': '100%'
 		});
 
 			addSelector('.form.hide', {
-				'position': 'relative',
 				'opacity': 0,
-				'bottom': '-40px',
 				'visibility': 'hidden'
 			});
 
@@ -192,7 +191,7 @@ var addStyle = function(){
 			});
 
 				addSelector('.success.show', {
-					'top': '-40px',
+					'top': '-5px',
 					'opacity': 1
 				});
 
