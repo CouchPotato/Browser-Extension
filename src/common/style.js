@@ -185,6 +185,7 @@ var addStyle = function(){
 			addSelector('.success', {
 				'position': 'relative',
 				'opacity': 0,
+				'visibility': 'hidden',
 				'text-align': 'center',
 				'font-size': '25px',
 				'padding': '10px'
@@ -192,7 +193,8 @@ var addStyle = function(){
 
 				addSelector('.success.show', {
 					'top': '-5px',
-					'opacity': 1
+					'opacity': 1,
+					'visibility': 'visible'
 				});
 
 	addSelector('.hidden', {
