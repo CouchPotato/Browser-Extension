@@ -4,20 +4,10 @@
 // @include https://*
 // @require library/css.js
 // @require library/helpers.js
-// @require library/mousetrap.js
 // @require style.js
 // ==/UserScript==
 
 var close_alert = null;
-
-Mousetrap.bind('c o u c h', function() {
-	if(close_alert){
-		close_alert();
-	}
-	else {
-		kango.invokeAsync('extension.openSidebar');
-	}
-});
 
 kango.addMessageListener('checkApi', function() {
 	kango.dispatchMessage('setApi', document.body.getAttribute('data-api'));

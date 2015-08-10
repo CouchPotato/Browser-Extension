@@ -23,10 +23,10 @@ var addStyle = function(){
 		'position': 'fixed',
 		'width': '100%',
 		'max-width': '450px',
-		'background': 'rgb(78,89,105)',
+		'background': '#FFF',
 		'font-size': '16px',
 		'overflow': 'hidden',
-		'font-family': '"Helvetica Neue", Helvetica, Arial, Geneva, sans-serif'
+		'font-family': 'OpenSans, "Open Sans", "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif'
 	});
 
 		addSelector('.popup .popup_inner', {
@@ -44,7 +44,7 @@ var addStyle = function(){
 		});
 
 	addSelector('.overlay', {
-		'background': '#000',
+		'background': '#FFF',
 		'opacity': 0,
 		'position': 'fixed',
 		'height': '100%',
@@ -71,12 +71,12 @@ var addStyle = function(){
 
 	addSelector('.popup_background_overlay', {
 		'z-index': 2,
-		'background': '@linear-gradient(to bottom, rgba(78,89,105,0) 0%, rgba(78,89,105,0.8) 30%, rgba(78,89,105,1) 100%)'
+		'background': '@linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 30%, rgba(255,255,255,1) 100%)'
 	});
 
 	addSelector('.loading', {
 		'top': 0,
-		'color': '#FFF',
+		'color': '#222',
 		'opacity': 1,
 		'position': 'absolute',
 		'left': 0,
@@ -106,7 +106,7 @@ var addStyle = function(){
 		'overflow-x': 'hidden',
 		'top': '15%',
 		'bottom': '5%',
-		'color': '#FFF',
+		'color': '#222',
 		'left': '40px',
 		'right': '40px'
 	});
@@ -114,12 +114,12 @@ var addStyle = function(){
 		addSelector('.title', {
 			'font-size': '30px',
 			'padding': '20px 0 0',
-			'color': '#FFF',
+			'color': '#222',
 			'margin': 0
 		});
 
 		addSelector('.year', {
-			'color': '#FFF',
+			'color': '#222',
 			'font-size': '20px',
 			'font-weight': 'normal',
 			'padding-left': '20px'
@@ -164,22 +164,23 @@ var addStyle = function(){
 				});
 
 			addSelector('.add_button', {
-				'background': '#5082BC',
-				'color': '#FFF !important',
+				'border': '1px solid #ac0000',
+				'color': '#ac0000 !important',
 				'padding': '10px',
 				'border-radius': '2px',
 				'text-decoration': 'none !important',
-				'font-weight': 'bold',
 				'float': 'right',
 				'position': 'relative',
 				'top': '-18px',
 				'text-align': 'center',
 				'width': '14%',
-				'cursor': 'pointer'
+				'cursor': 'pointer',
+				'@transition': 'all .3s cubic-bezier(0.9,0,0.1,1)'
 			});
 
 				addSelector('.add_button:hover', {
-					'background': '#4474ab'
+					'background': '#ac0000',
+					'color': '#FFF !important',
 				});
 
 			addSelector('.success', {
