@@ -25,7 +25,6 @@ var addStyle = function(){
 		'max-width': '450px',
 		'background': '#FFF',
 		'font-size': '16px',
-		'overflow': 'hidden',
 		'font-family': 'OpenSans, "Open Sans", "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif'
 	});
 
@@ -44,18 +43,32 @@ var addStyle = function(){
 		});
 
 	addSelector('.overlay', {
-		'background': '#FFF',
-		'opacity': 0,
+		'background': 'rgba(255,255,255,.8)',
 		'position': 'fixed',
 		'height': '100%',
 		'width': '100%',
+		'opacity': 0,
 		'top': 0,
 		'left': 0,
 		'z-index': 2147483640
 	});
 
 		addSelector('.active .overlay', {
-			'opacity': .5
+			'opacity': 1
+		});
+
+	addSelector('.try_this', {
+		'position': 'absolute',
+		'top': 0,
+		'bottom': 0,
+		'left': 0,
+		'right': '450px'
+	});
+
+		addSelector('.try_this iframe', {
+			'border': '0',
+			'width': '100%',
+			'height': '100%'
 		});
 
 	addSelector('.popup_background', {
@@ -197,6 +210,26 @@ var addStyle = function(){
 					'opacity': 1,
 					'visibility': 'visible'
 				});
+
+	addSelector('.cancel', {
+		'border': '1px solid #ac0000',
+		'color': '#ac0000 !important',
+		'padding': '10px',
+		'border-radius': '2px',
+		'text-decoration': 'none !important',
+		'text-align': 'center',
+		'cursor': 'pointer',
+		'@transition': 'all .3s cubic-bezier(0.9,0,0.1,1)',
+		'position': 'absolute',
+		'bottom': '10px',
+		'right': '100%',
+		'margin-right': '10px'
+	});
+
+		addSelector('.cancel:hover', {
+			'background': '#ac0000',
+			'color': '#FFF !important',
+		});
 
 	addSelector('.hidden', {
 		'opacity': .1

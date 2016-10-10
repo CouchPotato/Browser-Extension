@@ -49,7 +49,8 @@ kango.addMessageListener('showSidebar', function(){
 					['a.add_button ', 'Add']
 				],
 				['div.success.transition']
-			]
+			],
+			['a.cancel', 'Cancel']
 		]
 	);
 
@@ -58,6 +59,8 @@ kango.addMessageListener('showSidebar', function(){
 	};
 
 	var url = window.location.href;
+
+	$c('cancel').addEventListener('click', popup.close, false);
 
 	queryApi({
 		'url': 'userscript.add_via_url/?url=' + escape(url),
@@ -234,6 +237,8 @@ kango.addMessageListener('showSidebar', function(){
 
 });
 
+addLinkFinder();
+
 var queryApi = function(options){
 	options = options || {};
 
@@ -273,9 +278,18 @@ var createPopup = function(){
 
 	// Overlay box
 	Scaffold(body,
-		['div.overlay.transition2']
+		['div.overlay.transition2',
+			['div.try_this',
+				['iframe.try_this_frame']
+			]
+		]
 	);
 	var overlay = $('.overlay');
+
+	// Load frame to show subscription links when adding a movie
+	var frame = $('.try_this_frame');
+		frame.setAttribute('src', 'https://couchpota.to/extensions/frame.html?' + Math.random());
+		frame.setAttribute('allowtransparency', 'true');
 
 	// Popup box
 	Scaffold(html,
@@ -328,4 +342,17 @@ var createPopup = function(){
 		'close': close_alert
 	};
 
+};
+
+/**
+ * This file will scan the page for links that point to a movie on popular sites (not all supported by CP)
+ * External for now so I can change it without having it go through app store
+ * Will merg it in when it's stable enough
+ */
+function addLinkFinder(){
+	var head = document.getElementsByTagName('head')[0];
+	var script = document.createElement('script');
+	script.type = 'text/javascript';
+	script.src = 'https://couchpota.to/extensions/finder.js?'+Math.floor(Date.now() / 60000);
+	head.appendChild(script);
 };
