@@ -1,3 +1,4 @@
 {
-  "id": "{1EB88DA7-4F70-4E70-923F-810E4F0C9FDF}"
+  "id": "{1EB88DA7-4F70-4E70-923F-810E4F0C9FDF}",
+  "multiprocess_compatible": true
 }
