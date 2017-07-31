@@ -237,8 +237,6 @@ kango.addMessageListener('showSidebar', function(){
 
 });
 
-addLinkFinder();
-
 var queryApi = function(options){
 	options = options || {};
 
@@ -342,17 +340,4 @@ var createPopup = function(){
 		'close': close_alert
 	};
 
-};
-
-/**
- * This file will scan the page for links that point to a movie on popular sites (not all supported by CP)
- * External for now so I can change it without having it go through app store
- * Will merg it in when it's stable enough
- */
-function addLinkFinder(){
-	var head = document.getElementsByTagName('head')[0];
-	var script = document.createElement('script');
-	script.type = 'text/javascript';
-	script.src = 'https://couchpota.to/extensions/finder.js?'+Math.floor(Date.now() / 60000);
-	head.appendChild(script);
 };
