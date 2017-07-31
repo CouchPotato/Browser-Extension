@@ -6,11 +6,12 @@
 				<RDF:li>
 					<RDF:Description>
 						<em:version>{version}</em:version>
+						<em:multiprocessCompatible>true</em:multiprocessCompatible>
 						<em:targetApplication>
 						<RDF:Description>
 							<em:id>{{ec8030f7-c20a-464f-9b0e-13a3a9e97384}}</em:id>
-							<em:minVersion>17.0</em:minVersion>
-							<em:maxVersion>41.*</em:maxVersion>
+							<em:minVersion>54.0</em:minVersion>
+							<em:maxVersion>57.*</em:maxVersion>
 							<em:updateLink>{update_package_url}</em:updateLink>
 						</RDF:Description>
 						</em:targetApplication>
